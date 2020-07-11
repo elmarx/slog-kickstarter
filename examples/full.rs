@@ -1,5 +1,5 @@
 use crate::no_slog::log_via_log_crate;
-use crate::sample_module::*;
+use crate::sample_module::{log_debug_mode, log_global};
 use slog::{o, slog_info};
 use slog_kickstarter::SlogKickstarter;
 use slog_scope::set_global_logger;
@@ -27,7 +27,7 @@ fn main() {
     slog_info!(root_logger, "Hello World. {}", json_log_status; o!("type" => "example"));
 
     // example for a module with enforced debug-logging (set via `.with_debug_log_for()`)
-    log_debug_mode(root_logger.new(o!("scope" => "module-specific logger")));
+    log_debug_mode(&root_logger.new(o!("scope" => "module-specific logger")));
     log_via_log_crate();
     log_global();
 }
@@ -36,7 +36,7 @@ mod sample_module {
     use slog::{o, slog_debug, slog_info, Logger};
     use slog_scope::logger;
 
-    pub fn log_debug_mode(logger: Logger) {
+    pub fn log_debug_mode(logger: &Logger) {
         let example_value = 42;
         slog_debug!(logger, "This is debug log"; o!("example_value" => example_value));
     }
