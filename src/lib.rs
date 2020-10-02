@@ -105,7 +105,7 @@ impl SlogKickstarter {
 
         slog::Logger::root(
             drain,
-            o!("version" => env!("CARGO_PKG_VERSION"), "service" => self.service_name.to_owned(), "log_type" => "application", "application_type" => "service", "module" => FnValue(move |info| {
+            o!("service" => self.service_name.to_owned(), "log_type" => "application", "application_type" => "service", "module" => FnValue(move |info| {
                 info.module().to_string()
             })
             ),
