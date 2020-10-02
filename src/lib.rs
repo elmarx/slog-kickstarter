@@ -31,7 +31,7 @@ use std::env;
 pub struct SlogKickstarter {
     default_filter_level: FilterLevel,
     debug_modules: Vec<&'static str>,
-    service_name: &'static str,
+    service_name: String,
     init_std_log: bool,
     use_json_logging: bool,
 }
@@ -39,7 +39,7 @@ pub struct SlogKickstarter {
 impl SlogKickstarter {
     #[must_use]
     /// initialize the log-builder with a name for your service
-    pub fn new(service_name: &'static str) -> Self {
+    pub fn new<S: Into<String>>(service_name: S) -> Self {
         let use_json_logging = env::var("RUST_LOG_JSON")
             .map(|v| v == "1")
             .unwrap_or_default();
@@ -47,7 +47,7 @@ impl SlogKickstarter {
         Self {
             default_filter_level: FilterLevel::Info,
             debug_modules: vec![],
-            service_name,
+            service_name: service_name.into(),
             init_std_log: true,
             use_json_logging,
         }
@@ -105,7 +105,7 @@ impl SlogKickstarter {
 
         slog::Logger::root(
             drain,
-            o!("version" => env!("CARGO_PKG_VERSION"), "service" => self.service_name, "log_type" => "application", "application_type" => "service", "module" => FnValue(move |info| {
+            o!("version" => env!("CARGO_PKG_VERSION"), "service" => self.service_name.to_owned(), "log_type" => "application", "application_type" => "service", "module" => FnValue(move |info| {
                 info.module().to_string()
             })
             ),
